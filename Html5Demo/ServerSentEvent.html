@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>server sent event</title>
+</head>
+<body>
+  <span id="status">Connect closed!</span><br/>
+  <span id="output"></span>
+  <script>
+    window.addEventListener('load', function () {
+      var status = document.getElementById('status')
+      var output = document.getElementById('output')
+      var source
+      function connect () {
+        source = new EventSource('stream')
+        source.addEventListener('message', function (event) {
+          output.textContent = event.data
+          console.log(event.data);
+        }, false)
+        source.addEventListener('open', function (event) {
+          status.textContent = '链接打开了'
+        }, false)
+        source.addEventListener('error', function (event) {
+          if (event.target.readyState === EventSource.CLOSED) {
+            source.close()
+            status.textContent = '链接关闭了'
+          } else {
+            status.textContent = '链接关闭了，未知错误'
+          }
+        }, false)
+      }
+      if (!!window.EventSource) {
+        connect()
+        console.log('支持');
+      } else {
+        status.textContent = '对不起, 你的浏览器不支持server-sent event'
+      }
+    }, false)
+  </script>
+</body>
+</html>
