@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>WebRTC</title>
+</head>
+<body>
+  <video autoplay id="source" muted></video>
+  <video autoplay id="recorded" loop></video>
+  <div>
+    <button id="record" disabled>开始录制</button>
+  </div>
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+  <script>
+    var mediaSource = new MediaSource()
+    mediaSource.addEventListener('sourceopen', handleSourceOpen, false)
+    var mediaRecorder, recordedBlobs, sourceBuffer
+    var sourceVideo = document.getElementById('source')
+    var recordedVideo = document.getElementById('recorded')
+    var recordButton = document.getElementById('record')
+    recordButton.onclick = toggleRecording
+    // 设置媒体约束， 接收声音和视频。视频宽度为320px
+    var constraints = { audio: true, video: { width: 320 } }
+
+    function handleSuccess(stream) {
+      recordButton.disabled = false
+      window.stream = stream
+      sourceVideo.srcObject = stream
+    }
+
+    function handleError(error) {
+      console.log('获取用户媒体错误', error);
+    }
+
+    navigator.mediaDevices.getUserMedia(constraints)
+    .then(handleSuccess)
+    .catch(handleError)
+
+    function handleSourceOpen(event) {
+      sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vp8"')
+    }
+
+    function handleDataAvailable(event) {
+      if (event.data && event.length > 0) {
+        recordedBlobs.push('event.data')
+      }
+    }
+
+    function toggleRecording() {
+      if (recordButton.textContent === '开始录制') {
+        startRecording()
+      } else {
+        stopRecording()
+        recordButton.textContent = '开始录制'
+      }
+    }
+
+    function startRecording() {
+      recordedBlobs = []
+      var mimeType = [
+        'video/webm;codecs=vp9',
+        'video/webm;codecs=vp8',
+        'video/webm'
+      ]
+      var mimeType = mimeType.find(type => MediaRecorder.isTypeSupported(type)) || ''
+      try {
+        mediaRecorder = new MediaRecorder(window.stream, { mimeType })
+      } catch (e) {
+        alert('创建媒体录制器异常' + options.mimeType)
+        return
+      }
+      recordButton.textContent = '停止录制'
+      mediaRecorder.ondatavailable = handleDataAvailable
+      mediaRecorder.start(10)
+    }
+
+    function stopRecording() {
+      mediaRecorder.stop()
+      var buf = new Blob(recordedBlobs, { type: 'video/webm' })
+      recordedVideo.src = window.URL.createObjectURL(buf)
+    }
+  </script>
+</body>
+</html>
