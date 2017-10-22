@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Geolocation</title>
+</head>
+<body>
+  <span id="position"></span>
+  <script>
+    var sp = document.getElementById('position')
+    function success (p) {
+      sp.innerText = p.coords.latitude
+      console.log(p.coords)
+    }
+    function error (error) {
+      sp.innerText = '获取位置失败' + error.code + '  ' + error.message
+    }
+    var options = {
+      enableHighAccuracy: false,
+      timeout: 30000,
+      maximunAge: 0
+    }
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition (success, error, options)
+    } else{
+      window.alert('您的浏览器不支持Geolocation')
+    };
+  </script>
+</body>
+</html>

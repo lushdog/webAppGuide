@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>PostMessage</title>
+</head>
+<body>
+  <script>
+    ;(function () {
+      var message = [
+        '今天天气不错',
+        '明天的会议大家不要迟到',
+        '今晚大家回去吃顿好的',
+        '曼联输了',
+        '明天请假一天',
+        '这本书干货很多，大家好好看'
+      ]
+      var getMessage = function () {
+        var index = Math.floor(Math.random() * 10)
+        return message[index] || null
+      }
+      var postMessageLoop = function () {
+        var randomTime = Math.floor(Math.random() * 10000)
+        setTimeout(function() {
+          var message = getMessage()
+          if (message !== null) {
+            window.parent.postMessage(message, 'http://localhost:8080')
+          }
+          postMessageLoop()
+        }, randomTime);
+      }
+      postMessageLoop()
+    }())
+  </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>html5 XMLHttpRequest level 2</title>
+</head>
+<body>
+  数据: <input ><button>获取</button>
+  <script>
+    document.querySelector('button')
+    .addEventListener('click', function (e) {
+      e.preventDefault();
+      var xhr = new XMLHttpRequest()
+      if (!typeof xhr.withCredentials === undefined) {
+        console.log('浏览器不支持html5 XMLHttpRequest level 2');
+      } else {
+        xhr.onload = function () {
+          var data = JSON.parse(xhr.responseText)
+          document.querySelector('input').value = data.data
+        }
+        xhr.onerror = function (e) {
+          console.log(e);
+        }
+        xhr.open('GET', 'http://localhost:4412', true)
+        xhr.send()
+      }
+    })
+  </script>
+</body>
+</html>
