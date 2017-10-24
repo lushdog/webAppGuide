@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Notification</title>
+</head>
+<body>
+  <h1>Notification</h1>
+  <script>
+    Notification.requestPermission().then(function(permission) {
+      if (permission === 'granted') {
+        console.log('用户允许通知')
+        var n = new Notification('状态更新提醒',{
+          body: '你的朋友圈有3条新状态，快去查看吧',
+          tag: 'linxin',
+          icon: 'http://blog.gdfengshuo.com/images/avatar.jpg',
+          requireInteraction: true,
+          data: {
+            url: 'http://github.com/impressioncr'
+          }
+        })
+        setTimeout(function() {
+          n.close()
+        }, 10000)
+        n.onclick = function () {
+          window.open(n.data.url, '_blank')
+          n.close()
+        }
+      } else if (permission === 'denied') {
+        console.log('用户拒绝通知')
+      }
+    })
+  </script>
+</body>
+</html>
